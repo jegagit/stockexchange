@@ -34,7 +34,7 @@ def run_sony_exhaust_simulation(ob: OrderBook):
         ob.add_order(sim_buy_order)
         
         print(f"Sim: Order {sim_buy_order} placed.")
-        ob.show_book()
+        ob.show_book(symbol_to_simulate) # Pass symbol_to_simulate
         ob.show_trades()
         input("Press Enter to continue simulation...")
 
@@ -63,7 +63,7 @@ def run_sony_exhaust_simulation(ob: OrderBook):
         ob.add_order(sim_sell_order)
 
         print(f"Sim: Order {sim_sell_order} placed.")
-        ob.show_book()
+        ob.show_book(symbol_to_simulate) # Pass symbol_to_simulate
         ob.show_trades()
         input("Press Enter to continue simulation...")
     
@@ -109,13 +109,13 @@ def main():
     print("Order book pre-populated.")
     # --- End of Pre-population ---
 
-    help_message = "Commands: <BUY|B> [symbol] <qty> <price>, <SELL|S> [symbol] <qty> <price>, BOOK, TRADES, HELP, SIMSONY, QUIT. Default symbol: SONY"
+    help_message = "Commands: <BUY|B> [symbol] <qty> <price>, <SELL|S> [symbol] <qty> <price>, BOOK [symbol], TRADES, ALLTRADES, POS, HELP, SIMSONY, QUIT. Default symbol: SONY"
     print(help_message) # Print help message once at the start
     
     default_symbol = "SONY"
 
     while True:
-        cmd_input = input("> ").strip() # Added space for prompt clarity
+        cmd_input = input("> ").strip()
         if not cmd_input:
             continue
             
@@ -125,12 +125,20 @@ def main():
         if command_action == "QUIT":
             break
         elif command_action == "BOOK":
-            ob.show_book()
+            if len(parts) > 1:
+                symbol_to_show = parts[1].upper()
+                ob.show_book(symbol_to_show)
+            else:
+                ob.show_book()
         elif command_action == "TRADES":
-            ob.show_trades()
+            ob.show_trades() 
+        elif command_action == "ALLTRADES": 
+            ob.show_trades(show_all=True)
+        elif command_action == "POS": # Changed from POSITIONS to POS
+            ob.show_positions()
         elif command_action == "HELP": 
             print(help_message)
-        elif command_action == "SIMSONY": # New SIMSONY command
+        elif command_action == "SIMSONY":
             run_sony_exhaust_simulation(ob)
         elif command_action in ("BUY", "B", "SELL", "S"):
             side = "buy" if command_action in ("BUY", "B") else "sell"
